@@ -32,6 +32,7 @@ css/style.css       ← styles
 js/main.js          ← app logic
 data/led-tiles.json ← LED tiles (pitch, panel size) — edit to match RSE inventory
 data/cameras.json   ← camera bodies (sensor size, resolution)
+data/lenses.json    ← lenses (zoom range, aperture, extender)
 docs/               ← guides (start with docs/GITHUB-GUIDE.md)
 ```
 

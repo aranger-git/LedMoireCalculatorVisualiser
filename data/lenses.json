@@ -1,0 +1,53 @@
+{
+  "_note": "Lenses. Focal lengths in mm. aperture_curve = [focal_mm, max f-number] points; the lens ramps between them. extender = built-in doubler factor.",
+  "lenses": [
+    {
+      "id": "canon-kj20x8.2b",
+      "name": "Canon KJ20x8.2B IRSD",
+      "owned": true,
+      "mount": "B4",
+      "format": "2/3\"",
+      "focal_min_mm": 8.2,
+      "focal_max_mm": 164,
+      "extender": 2.0,
+      "aperture_curve": [
+        [
+          8.2,
+          1.9
+        ],
+        [
+          115.4,
+          1.9
+        ],
+        [
+          164,
+          2.7
+        ]
+      ],
+      "extender_aperture_curve": [
+        [
+          16.4,
+          3.8
+        ],
+        [
+          230.8,
+          3.8
+        ],
+        [
+          328,
+          5.4
+        ]
+      ],
+      "mod_m": 0.9,
+      "source": "usa.canon.com KJ20x8.2B IRSD spec page"
+    },
+    {
+      "id": "canon-33x",
+      "name": "Canon 33x IF (model TBC)",
+      "owned": true,
+      "mount": "B4",
+      "format": "2/3\"",
+      "_check": "Need full model code from the barrel (e.g. J33ax11B IRS / HJ...) to fill focal range and aperture"
+    }
+  ]
+}
