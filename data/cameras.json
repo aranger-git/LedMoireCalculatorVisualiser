@@ -1,0 +1,13 @@
+{
+  "_note": "Starter list. Sensor sizes are the active area for the listed recording format — approximate, verify against the manufacturer sheet before quoting a client. Dimensions in mm.",
+  "cameras": [
+    { "id": "b4-hd",        "name": "Broadcast 2/3\" B4 (HD)",       "sensor_w_mm": 9.59,  "sensor_h_mm": 5.39,  "res_w_px": 1920 },
+    { "id": "b4-uhd",       "name": "Broadcast 2/3\" B4 (UHD)",      "sensor_w_mm": 9.59,  "sensor_h_mm": 5.39,  "res_w_px": 3840 },
+    { "id": "s35-uhd",      "name": "Generic Super35 (UHD)",         "sensor_w_mm": 24.89, "sensor_h_mm": 14.0,  "res_w_px": 3840 },
+    { "id": "ff-uhd",       "name": "Generic Full Frame (UHD)",      "sensor_w_mm": 35.6,  "sensor_h_mm": 20.0,  "res_w_px": 3840 },
+    { "id": "sony-fx6",     "name": "Sony FX6 (UHD)",                "sensor_w_mm": 35.6,  "sensor_h_mm": 20.0,  "res_w_px": 3840 },
+    { "id": "red-komodo",   "name": "RED Komodo 6K",                 "sensor_w_mm": 27.03, "sensor_h_mm": 14.26, "res_w_px": 6144 },
+    { "id": "bmd-ursa-46k", "name": "Blackmagic URSA Mini Pro 4.6K", "sensor_w_mm": 25.34, "sensor_h_mm": 14.25, "res_w_px": 4608 },
+    { "id": "arri-mini-lf", "name": "ARRI Alexa Mini LF",            "sensor_w_mm": 36.70, "sensor_h_mm": 25.54, "res_w_px": 4448 }
+  ]
+}

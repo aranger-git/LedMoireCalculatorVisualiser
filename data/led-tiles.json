@@ -1,0 +1,11 @@
+{
+  "_note": "Generic starter list. Replace with RSE inventory (brand, model, pitch). Dimensions in mm.",
+  "tiles": [
+    { "id": "generic-1.5", "name": "Generic 1.5 mm", "pitch_mm": 1.5, "panel_w_mm": 500, "panel_h_mm": 500 },
+    { "id": "generic-1.9", "name": "Generic 1.9 mm", "pitch_mm": 1.9, "panel_w_mm": 500, "panel_h_mm": 500 },
+    { "id": "generic-2.6", "name": "Generic 2.6 mm", "pitch_mm": 2.6, "panel_w_mm": 500, "panel_h_mm": 500 },
+    { "id": "generic-2.9", "name": "Generic 2.9 mm", "pitch_mm": 2.9, "panel_w_mm": 500, "panel_h_mm": 500 },
+    { "id": "generic-3.9", "name": "Generic 3.9 mm", "pitch_mm": 3.9, "panel_w_mm": 500, "panel_h_mm": 1000 },
+    { "id": "generic-4.8", "name": "Generic 4.8 mm", "pitch_mm": 4.8, "panel_w_mm": 500, "panel_h_mm": 1000 }
+  ]
+}

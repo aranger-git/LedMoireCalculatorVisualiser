@@ -1,0 +1,18 @@
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Dependencies / builds (if we ever add a build step)
+node_modules/
+dist/
+
+# Local notes and client files — never commit client drawings or contracts
+private/
+*.vwx
+*.dwg
