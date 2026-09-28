@@ -1,7 +1,7 @@
 {
   "_note": "RSE LED inventory. Dimensions in mm. Pitch = exact value from the manufacturer spec sheet (source field). Edit on github.com with the pencil icon.",
   "tiles": [
-    { "id": "absen-m2.9",  "brand": "Absen", "model": "M2.9",        "name": "Absen M2.9",           "pitch_mm": 2.97,  "panel_w_mm": 500, "panel_h_mm": 500,  "res_w_px": 168, "res_h_px": 168, "env": "indoor",  "source": "shotvision.co.jp/absen_m29.php" },
+    { "id": "absen-m2.9",  "brand": "Absen", "model": "M2.9",        "name": "Absen M2.9",           "pitch_mm": 2.976, "panel_w_mm": 500, "panel_h_mm": 500,  "res_w_px": 168, "res_h_px": 168, "env": "indoor",  "source": "shotvision.co.jp/absen_m29.php" },
     { "id": "absen-pl2.5", "brand": "Absen", "model": "PL2.5 Pro",   "name": "Absen PL2.5",          "pitch_mm": 2.5,   "panel_w_mm": 500, "panel_h_mm": 500,  "res_w_px": 200, "res_h_px": 200, "env": "indoor",  "source": "ledwallcentral.com/Absen-PL2.5_Pro_V10.htm" },
     { "id": "roe-tp2.6",   "brand": "ROE",   "model": "Topaz TP2.6", "name": "ROE Topaz TP2.6",      "pitch_mm": 2.604, "panel_w_mm": 500, "panel_h_mm": 500,  "res_w_px": 192, "res_h_px": 192, "env": "indoor",  "source": "roevisual.com/products/topaz", "_check": "Topaz comes in 1.5/1.9/2.2/2.6 — confirm which RSE owns" },
     { "id": "roe-v4st",    "brand": "ROE",   "model": "Vanish ST V4ST", "name": "ROE VST4 (V4ST)",   "pitch_mm": 4.63,  "panel_w_mm": 1000, "panel_h_mm": 1000, "res_w_px": 216, "res_h_px": 216, "env": "outdoor", "source": "roevisual.com/products/vanish-st" },
