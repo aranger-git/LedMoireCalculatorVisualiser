@@ -1,5 +1,5 @@
 {
-  "_note": "RSE LED inventory. Dimensions in mm. Pitch = exact value from the manufacturer spec sheet (source field). Edit on github.com with the pencil icon.",
+  "_note": "RSE LED inventory. Dimensions in mm. Pitch = exact value from the manufacturer spec sheet (source field). Edit on github.com with the pencil icon. emitter_fill = lit area width / pitch (small bright dots on black = low fill, stronger moiré harmonics).",
   "tiles": [
     {
       "id": "absen-m2.9",
@@ -12,7 +12,8 @@
       "res_w_px": 168,
       "res_h_px": 168,
       "env": "indoor",
-      "source": "shotvision.co.jp/absen_m29.php"
+      "source": "shotvision.co.jp/absen_m29.php",
+      "emitter_fill": 0.3
     },
     {
       "id": "absen-pl2.5",
@@ -25,7 +26,8 @@
       "res_w_px": 200,
       "res_h_px": 200,
       "env": "indoor",
-      "source": "ledwallcentral.com/Absen-PL2.5_Pro_V10.htm"
+      "source": "ledwallcentral.com/Absen-PL2.5_Pro_V10.htm",
+      "emitter_fill": 0.3
     },
     {
       "id": "roe-tp2.2",
@@ -38,7 +40,8 @@
       "res_w_px": 224,
       "res_h_px": 224,
       "env": "indoor",
-      "source": "roevisual.com/products/topaz"
+      "source": "roevisual.com/products/topaz",
+      "emitter_fill": 0.3
     },
     {
       "id": "roe-v4st",
@@ -51,7 +54,8 @@
       "res_w_px": 216,
       "res_h_px": 216,
       "env": "outdoor",
-      "source": "roevisual.com/products/vanish-st"
+      "source": "roevisual.com/products/vanish-st",
+      "emitter_fill": 0.3
     },
     {
       "id": "roe-cb5",
@@ -64,7 +68,8 @@
       "res_w_px": 104,
       "res_h_px": 208,
       "env": "outdoor",
-      "source": "roevisual.com/uploads/Images/Products/Carbon/cb-specs.pdf"
+      "source": "roevisual.com/uploads/Images/Products/Carbon/cb-specs.pdf",
+      "emitter_fill": 0.3
     },
     {
       "id": "roe-gp2.6",
@@ -77,7 +82,8 @@
       "res_w_px": 192,
       "res_h_px": 384,
       "env": "indoor",
-      "source": "roevisual.com/uploads/files/Product%20File/Graphite/graphite-specification1.pdf"
+      "source": "roevisual.com/uploads/files/Product%20File/Graphite/graphite-specification1.pdf",
+      "emitter_fill": 0.3
     }
   ]
 }
