@@ -3,21 +3,112 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LED Moiré Calculator — Ranger Son Éclairage</title>
+  <title>Calculateur de moiré LED — Ranger Son Éclairage</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <header>
-    <h1>LED Moiré Calculator</h1>
-    <p class="sub">Ranger Son Éclairage · Écran LED &amp; caméra</p>
+  <header class="top">
+    <div>
+      <h1 data-i18n="title">Calculateur de moiré LED</h1>
+      <p class="sub">Ranger Son Éclairage · <span data-i18n="subtitle">Écran LED &amp; caméra</span></p>
+    </div>
+    <div class="top-actions">
+      <button id="lang" class="ghost" type="button">EN</button>
+      <button id="share" class="ghost" type="button" data-i18n="share">Copier le lien</button>
+    </div>
   </header>
-  <main>
-    <section class="card">
-      <h2>🚧 En construction / Under construction</h2>
-      <p>Le calculateur et la vue 3D arrivent bientôt. The calculator and 3D view are coming soon.</p>
-      <p id="data-status">Chargement des données…</p>
+
+  <main class="layout">
+    <form id="controls" class="card controls" autocomplete="off">
+      <fieldset>
+        <legend data-i18n="setup">Montage</legend>
+        <label><span data-i18n="wall">Écran LED</span>
+          <select id="tile"></select>
+        </label>
+        <label><span data-i18n="camera">Caméra</span>
+          <select id="camera"></select>
+        </label>
+        <label><span data-i18n="lens">Objectif</span>
+          <select id="lens"></select>
+        </label>
+        <p id="mount-warn" class="warn" hidden></p>
+        <label class="check" id="ext-row"><input type="checkbox" id="extender"> <span data-i18n="extender">Extender 2× engagé</span></label>
+      </fieldset>
+
+      <fieldset>
+        <legend data-i18n="shot">Plan</legend>
+        <label><span data-i18n="focal">Focale</span> <output id="focal-out"></output>
+          <input type="range" id="focal" step="any">
+        </label>
+        <label><span data-i18n="distance">Distance caméra → écran</span> <output id="distance-out"></output>
+          <input type="range" id="distance" min="0" max="1000" step="1">
+        </label>
+        <label><span data-i18n="aperture">Diaphragme</span> <output id="aperture-out"></output>
+          <select id="aperture"></select>
+        </label>
+        <p class="hint" id="aperture-hint"></p>
+        <label><span data-i18n="gap">Sujet devant l'écran</span> <output id="gap-out"></output>
+          <input type="range" id="gap" min="0" max="15" step="0.5" value="0">
+        </label>
+        <p class="hint" data-i18n="gapHint">0 = mise au point sur l'écran (pire cas). Sinon, la caméra fait le point sur le sujet et l'écran devient flou.</p>
+      </fieldset>
+
+      <details>
+        <summary data-i18n="advanced">Avancé</summary>
+        <label><span data-i18n="angle">Angle de l'écran (aperçu)</span> <output id="angle-out"></output>
+          <input type="range" id="angle" min="0" max="15" step="0.5" value="3">
+        </label>
+        <label><span data-i18n="fill">Taille des LED (remplissage)</span> <output id="fill-out"></output>
+          <input type="range" id="fill" min="0.1" max="0.8" step="0.05">
+        </label>
+      </details>
+    </form>
+
+    <section class="results">
+      <div id="verdict" class="card verdict">
+        <div class="verdict-head">
+          <span id="verdict-icon" class="verdict-icon" aria-hidden="true"></span>
+          <div>
+            <p class="eyebrow" data-i18n="risk">Risque de moiré</p>
+            <p id="verdict-label" class="verdict-label"></p>
+          </div>
+        </div>
+        <p id="verdict-text" class="verdict-text"></p>
+      </div>
+
+      <div class="stats">
+        <div class="card stat"><p class="eyebrow" data-i18n="ledPx">1 pixel LED sur le capteur</p><p class="stat-value" id="s-ledpx"></p><p class="hint" data-i18n="ledPxHint">Pire zone : ~1 à 3 pixels caméra</p></div>
+        <div class="card stat"><p class="eyebrow" data-i18n="blur">Flou de l'écran</p><p class="stat-value" id="s-blur"></p><p class="hint" data-i18n="blurHint">&gt; 3 px de flou efface le moiré</p></div>
+        <div class="card stat"><p class="eyebrow" data-i18n="contrast">Contraste du moiré</p><p class="stat-value" id="s-contrast"></p><p class="hint" data-i18n="contrastHint">Seuils provisoires : 6 % / 25 %</p></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2 data-i18n="preview">Aperçu caméra</h2>
+          <p class="hint" data-i18n="previewHint">Recadrage 240 × 135 pixels du capteur, agrandi. Mire blanche plein écran.</p>
+        </div>
+        <canvas id="preview" width="240" height="135"></canvas>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2 id="chart-title"></h2>
+          <div class="seg" role="tablist">
+            <button type="button" data-sweep="distance" class="on" data-i18n="byDistance">Selon la distance</button>
+            <button type="button" data-sweep="focal" data-i18n="byFocal">Selon la focale</button>
+          </div>
+        </div>
+        <div id="chart" class="chart"></div>
+        <p id="ranges" class="ranges"></p>
+      </div>
+
+      <details class="card notes">
+        <summary data-i18n="how">Comment c'est calculé</summary>
+        <div data-i18n-html="howBody"></div>
+      </details>
     </section>
   </main>
-  <script src="js/main.js"></script>
+
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>

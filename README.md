@@ -8,15 +8,21 @@ It's for sales (setting client expectations), for techs (placing cameras) and fo
 
 ## Status
 
-🚧 **Setup only.** The v1 calculator and 3D view are next.
+✅ **v1 calculator is live in `index.html`:**
+- Pick the LED wall, camera and lens (RSE stock is marked ★), then set focal length, distance, aperture and how far the subject stands in front of the wall.
+- It gives a moiré risk rating (Low / Possible / High) and the numbers behind it: LED pixel size on the sensor, wall blur, moiré contrast.
+- A simulated camera preview shows what the sensor records.
+- A risk curve shows risk by distance or by focal length. Click the curve to jump to that setting.
+- Copy link saves the whole setup in the URL, so it can go into an email or a proposal.
+- FR / EN toggle.
 
-## Planned v1
+⚠️ The risk thresholds (6 % / 25 %) and lens sharpness are **provisional**. Calibrate against a real wall with the PMW-400L before promising a client anything.
 
-1. **Calculator.** Enter LED pitch, camera sensor, resolution, focal length, distance and aperture. It compares how big one LED pixel lands on the sensor with one camera pixel and gives a moiré risk rating.
-2. **3D view.** Shows the wall and the camera position with green, yellow or red risk zones as you move the camera.
-3. **Moiré preview.** Simulates the two grids interfering so clients can see the effect.
-4. **Client mode.** A simplified FR/EN view to share from proposals.
-5. **Later.** Refresh rate vs. shutter (scan lines) and a picker for RSE's LED inventory.
+## Next
+
+1. 3D view: wall and camera position, with the risk zones on the floor plan.
+2. Simplified client mode.
+3. Refresh rate vs. shutter (scan lines).
 
 ## How it's built
 
@@ -29,9 +35,11 @@ It's for sales (setting client expectations), for techs (placing cameras) and fo
 ```
 index.html          ← the app's main page
 css/style.css       ← styles
-js/main.js          ← app logic
+js/moire.js         ← the physics (optics, sampling, risk)
+js/main.js          ← the interface
 data/led-tiles.json ← LED tiles (pitch, panel size) — edit to match RSE inventory
 data/cameras.json   ← camera bodies (sensor size, resolution)
+data/lenses.json    ← lenses (zoom range, aperture, extender)
 docs/               ← guides (start with docs/GITHUB-GUIDE.md)
 ```
 

@@ -1,11 +1,89 @@
 {
-  "_note": "Generic starter list. Replace with RSE inventory (brand, model, pitch). Dimensions in mm.",
+  "_note": "RSE LED inventory. Dimensions in mm. Pitch = exact value from the manufacturer spec sheet (source field). Edit on github.com with the pencil icon. emitter_fill = lit area width / pitch (small bright dots on black = low fill, stronger moiré harmonics).",
   "tiles": [
-    { "id": "generic-1.5", "name": "Generic 1.5 mm", "pitch_mm": 1.5, "panel_w_mm": 500, "panel_h_mm": 500 },
-    { "id": "generic-1.9", "name": "Generic 1.9 mm", "pitch_mm": 1.9, "panel_w_mm": 500, "panel_h_mm": 500 },
-    { "id": "generic-2.6", "name": "Generic 2.6 mm", "pitch_mm": 2.6, "panel_w_mm": 500, "panel_h_mm": 500 },
-    { "id": "generic-2.9", "name": "Generic 2.9 mm", "pitch_mm": 2.9, "panel_w_mm": 500, "panel_h_mm": 500 },
-    { "id": "generic-3.9", "name": "Generic 3.9 mm", "pitch_mm": 3.9, "panel_w_mm": 500, "panel_h_mm": 1000 },
-    { "id": "generic-4.8", "name": "Generic 4.8 mm", "pitch_mm": 4.8, "panel_w_mm": 500, "panel_h_mm": 1000 }
+    {
+      "id": "absen-m2.9",
+      "brand": "Absen",
+      "model": "M2.9",
+      "name": "Absen M2.9",
+      "pitch_mm": 2.976,
+      "panel_w_mm": 500,
+      "panel_h_mm": 500,
+      "res_w_px": 168,
+      "res_h_px": 168,
+      "env": "indoor",
+      "source": "shotvision.co.jp/absen_m29.php",
+      "emitter_fill": 0.3
+    },
+    {
+      "id": "absen-pl2.5",
+      "brand": "Absen",
+      "model": "PL2.5 Pro",
+      "name": "Absen PL2.5",
+      "pitch_mm": 2.5,
+      "panel_w_mm": 500,
+      "panel_h_mm": 500,
+      "res_w_px": 200,
+      "res_h_px": 200,
+      "env": "indoor",
+      "source": "ledwallcentral.com/Absen-PL2.5_Pro_V10.htm",
+      "emitter_fill": 0.3
+    },
+    {
+      "id": "roe-tp2.2",
+      "brand": "ROE",
+      "model": "Topaz TP2.2",
+      "name": "ROE Topaz TP2.2",
+      "pitch_mm": 2.232,
+      "panel_w_mm": 500,
+      "panel_h_mm": 500,
+      "res_w_px": 224,
+      "res_h_px": 224,
+      "env": "indoor",
+      "source": "roevisual.com/products/topaz",
+      "emitter_fill": 0.3
+    },
+    {
+      "id": "roe-v4st",
+      "brand": "ROE",
+      "model": "Vanish ST V4ST",
+      "name": "ROE VST4 (V4ST)",
+      "pitch_mm": 4.63,
+      "panel_w_mm": 1000,
+      "panel_h_mm": 1000,
+      "res_w_px": 216,
+      "res_h_px": 216,
+      "env": "outdoor",
+      "source": "roevisual.com/products/vanish-st",
+      "emitter_fill": 0.3
+    },
+    {
+      "id": "roe-cb5",
+      "brand": "ROE",
+      "model": "Carbon CB5",
+      "name": "ROE CB5",
+      "pitch_mm": 5.77,
+      "panel_w_mm": 600,
+      "panel_h_mm": 1200,
+      "res_w_px": 104,
+      "res_h_px": 208,
+      "env": "outdoor",
+      "source": "roevisual.com/uploads/Images/Products/Carbon/cb-specs.pdf",
+      "emitter_fill": 0.3
+    },
+    {
+      "id": "roe-gp2.6",
+      "brand": "ROE",
+      "model": "Graphite GP2.6",
+      "name": "ROE GP2.6",
+      "pitch_mm": 2.604,
+      "panel_w_mm": 500,
+      "panel_h_mm": 1000,
+      "res_w_px": 192,
+      "res_h_px": 384,
+      "env": "indoor",
+      "source": "roevisual.com/uploads/files/Product%20File/Graphite/graphite-specification1.pdf",
+      "emitter_fill": 0.3
+    }
   ]
 }

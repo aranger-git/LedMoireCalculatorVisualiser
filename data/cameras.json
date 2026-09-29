@@ -1,13 +1,73 @@
 {
-  "_note": "Starter list. Sensor sizes are the active area for the listed recording format — approximate, verify against the manufacturer sheet before quoting a client. Dimensions in mm.",
+  "_note": "Camera bodies. owned=true = RSE stock. Sensor = active 16:9 area for the recording format (mm). three_chip = prism 3-CMOS (full res per colour, no Bayer). Verify generic entries before quoting a client.",
   "cameras": [
-    { "id": "b4-hd",        "name": "Broadcast 2/3\" B4 (HD)",       "sensor_w_mm": 9.59,  "sensor_h_mm": 5.39,  "res_w_px": 1920 },
-    { "id": "b4-uhd",       "name": "Broadcast 2/3\" B4 (UHD)",      "sensor_w_mm": 9.59,  "sensor_h_mm": 5.39,  "res_w_px": 3840 },
-    { "id": "s35-uhd",      "name": "Generic Super35 (UHD)",         "sensor_w_mm": 24.89, "sensor_h_mm": 14.0,  "res_w_px": 3840 },
-    { "id": "ff-uhd",       "name": "Generic Full Frame (UHD)",      "sensor_w_mm": 35.6,  "sensor_h_mm": 20.0,  "res_w_px": 3840 },
-    { "id": "sony-fx6",     "name": "Sony FX6 (UHD)",                "sensor_w_mm": 35.6,  "sensor_h_mm": 20.0,  "res_w_px": 3840 },
-    { "id": "red-komodo",   "name": "RED Komodo 6K",                 "sensor_w_mm": 27.03, "sensor_h_mm": 14.26, "res_w_px": 6144 },
-    { "id": "bmd-ursa-46k", "name": "Blackmagic URSA Mini Pro 4.6K", "sensor_w_mm": 25.34, "sensor_h_mm": 14.25, "res_w_px": 4608 },
-    { "id": "arri-mini-lf", "name": "ARRI Alexa Mini LF",            "sensor_w_mm": 36.70, "sensor_h_mm": 25.54, "res_w_px": 4448 }
+    {
+      "id": "sony-pmw400l",
+      "name": "Sony PMW-400L",
+      "owned": true,
+      "mount": "B4",
+      "sensor": "3x 2/3\" Exmor CMOS",
+      "three_chip": true,
+      "sensor_w_mm": 9.59,
+      "sensor_h_mm": 5.39,
+      "res_w_px": 1920,
+      "res_h_px": 1080,
+      "source": "Sony / Full Compass catalog: three 2/3\" full HD CMOS, 1920x1080 effective each"
+    },
+    {
+      "id": "b4-uhd",
+      "name": "Broadcast 2/3\" B4 (UHD, client)",
+      "owned": false,
+      "mount": "B4",
+      "three_chip": true,
+      "sensor_w_mm": 9.59,
+      "sensor_h_mm": 5.39,
+      "res_w_px": 3840,
+      "res_h_px": 2160
+    },
+    {
+      "id": "s35-uhd",
+      "name": "Generic Super35 (UHD, client)",
+      "owned": false,
+      "mount": "PL/EF",
+      "three_chip": false,
+      "sensor_w_mm": 24.89,
+      "sensor_h_mm": 14.0,
+      "res_w_px": 3840,
+      "res_h_px": 2160
+    },
+    {
+      "id": "sony-fx6",
+      "name": "Sony FX6 (UHD, client)",
+      "owned": false,
+      "mount": "E",
+      "three_chip": false,
+      "sensor_w_mm": 35.6,
+      "sensor_h_mm": 20.0,
+      "res_w_px": 3840,
+      "res_h_px": 2160
+    },
+    {
+      "id": "red-komodo",
+      "name": "RED Komodo 6K (client)",
+      "owned": false,
+      "mount": "RF",
+      "three_chip": false,
+      "sensor_w_mm": 27.03,
+      "sensor_h_mm": 14.26,
+      "res_w_px": 6144,
+      "res_h_px": 3240
+    },
+    {
+      "id": "arri-mini-lf",
+      "name": "ARRI Alexa Mini LF (client)",
+      "owned": false,
+      "mount": "LPL",
+      "three_chip": false,
+      "sensor_w_mm": 36.7,
+      "sensor_h_mm": 25.54,
+      "res_w_px": 4448,
+      "res_h_px": 3096
+    }
   ]
 }

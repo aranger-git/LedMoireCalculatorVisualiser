@@ -1,0 +1,88 @@
+{
+  "_note": "Lenses. Focal lengths in mm. aperture_curve = [focal_mm, max f-number] points; the lens ramps between them. extender = built-in doubler. mtf50_lpmm = frequency where the lens drops to 50% contrast (sharpness estimate).",
+  "lenses": [
+    {
+      "id": "canon-kj20x8.2b",
+      "name": "Canon KJ20x8.2B IRSD",
+      "owned": true,
+      "mount": "B4",
+      "format": "2/3\"",
+      "focal_min_mm": 8.2,
+      "focal_max_mm": 164,
+      "extender": 2.0,
+      "aperture_curve": [
+        [
+          8.2,
+          1.9
+        ],
+        [
+          115.4,
+          1.9
+        ],
+        [
+          164,
+          2.7
+        ]
+      ],
+      "extender_aperture_curve": [
+        [
+          16.4,
+          3.8
+        ],
+        [
+          230.8,
+          3.8
+        ],
+        [
+          328,
+          5.4
+        ]
+      ],
+      "mod_m": 0.9,
+      "source": "usa.canon.com KJ20x8.2B IRSD spec page",
+      "mtf50_lpmm": 100
+    },
+    {
+      "id": "canon-j33ax11b",
+      "name": "Canon J33ax11B IASD",
+      "owned": true,
+      "mount": "B4",
+      "format": "2/3\"",
+      "focal_min_mm": 11,
+      "focal_max_mm": 363,
+      "extender": 2.0,
+      "aperture_curve": [
+        [
+          11,
+          1.8
+        ],
+        [
+          200,
+          1.8
+        ],
+        [
+          363,
+          3.2
+        ]
+      ],
+      "extender_aperture_curve": [
+        [
+          22,
+          3.6
+        ],
+        [
+          400,
+          3.6
+        ],
+        [
+          726,
+          6.4
+        ]
+      ],
+      "mod_m": 2.5,
+      "mtf50_lpmm": 80,
+      "source": "Focal range: enhancedviewhd.com listing (11-363 mm, 726 mm with 2x).",
+      "_check": "Max aperture curve and MOD are estimates — read the f-number ramp off the barrel or the Canon spec sheet"
+    }
+  ]
+}
