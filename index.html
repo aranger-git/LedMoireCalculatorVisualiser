@@ -13,17 +13,25 @@
     <div>
       <h1 data-i18n="title">Calculateur de moiré LED</h1>
       <p class="sub">Ranger Son Éclairage · <span data-i18n="subtitle">Écran LED &amp; caméra</span></p>
+      <p id="c-project" class="client-only project"></p>
     </div>
     <div class="top-actions">
       <button id="lang" class="ghost" type="button">EN</button>
-      <button id="share" class="ghost" type="button" data-i18n="share">Copier le lien</button>
+      <button id="share" class="ghost full-only" type="button" data-i18n="share">Copier le lien</button>
+      <button id="share-client" class="ghost full-only" type="button" data-i18n="shareClient">Lien client</button>
+      <button id="to-client" class="primary full-only" type="button" data-i18n="toClient">Aperçu client</button>
+      <button id="to-full" class="ghost" type="button" data-i18n="toFull" hidden>← Retour à l'outil</button>
+      <button id="print" class="ghost client-only" type="button" data-i18n="print">Imprimer / PDF</button>
     </div>
   </header>
 
   <main class="layout">
-    <form id="controls" class="card controls" autocomplete="off">
+    <form id="controls" class="card controls full-only" autocomplete="off">
       <fieldset>
         <legend data-i18n="setup">Montage</legend>
+        <label><span data-i18n="project">Projet / client</span>
+          <input type="text" id="project" maxlength="80" data-i18n-ph="projectPh">
+        </label>
         <label><span data-i18n="wall">Écran LED</span>
           <select id="tile"></select>
         </label>
@@ -78,7 +86,17 @@
         <p id="verdict-text" class="verdict-text"></p>
       </div>
 
-      <div class="stats">
+      <div class="card client-only">
+        <h2 data-i18n="cSetup">Votre configuration</h2>
+        <dl id="c-setup" class="setup-list"></dl>
+      </div>
+
+      <div class="card client-only">
+        <h2 data-i18n="cReco">Nos recommandations</h2>
+        <ul id="c-reco" class="reco"></ul>
+      </div>
+
+      <div class="stats full-only">
         <div class="card stat"><p class="eyebrow" data-i18n="ledPx">1 pixel LED sur le capteur</p><p class="stat-value" id="s-ledpx"></p><p class="hint" data-i18n="ledPxHint">Pire zone : ~1 à 3 pixels caméra</p></div>
         <div class="card stat"><p class="eyebrow" data-i18n="blur">Flou de l'écran</p><p class="stat-value" id="s-blur"></p><p class="hint" data-i18n="blurHint">&gt; 3 px de flou efface le moiré</p></div>
         <div class="card stat"><p class="eyebrow" data-i18n="contrast">Contraste du moiré</p><p class="stat-value" id="s-contrast"></p><p class="hint" data-i18n="contrastHint">Seuils provisoires : 6 % / 25 %</p></div>
@@ -97,8 +115,8 @@
           <div id="scene" class="scene"></div>
           <p id="hud" class="hud"></p>
         </div>
-        <p class="hint" data-i18n="view3dHint"></p>
-        <div class="grid3">
+        <p class="hint" data-i18n="view3dHint" data-i18n-client="view3dHintClient"></p>
+        <div class="grid3 full-only">
           <fieldset>
             <legend data-i18n="wallSize">Écran</legend>
             <label><span data-i18n="wallW"></span><input type="number" id="wallW" min="0.5" max="100" step="0.5"></label>
@@ -133,13 +151,13 @@
 
       <div class="card">
         <div class="card-head">
-          <h2 data-i18n="preview">Aperçu caméra</h2>
-          <p class="hint" data-i18n="previewHint">Recadrage 240 × 135 pixels du capteur, agrandi. Mire blanche plein écran.</p>
+          <h2 data-i18n="preview" data-i18n-client="previewClient">Aperçu caméra</h2>
+          <p class="hint" data-i18n="previewHint" data-i18n-client="previewHintClient">Recadrage 240 × 135 pixels du capteur, agrandi. Mire blanche plein écran.</p>
         </div>
         <canvas id="preview" width="240" height="135"></canvas>
       </div>
 
-      <div class="card">
+      <div class="card full-only">
         <div class="card-head">
           <h2 id="chart-title"></h2>
           <div class="seg" role="tablist">
@@ -151,10 +169,16 @@
         <p id="ranges" class="ranges"></p>
       </div>
 
-      <details class="card notes">
+      <details class="card notes full-only">
         <summary data-i18n="how">Comment c'est calculé</summary>
         <div data-i18n-html="howBody"></div>
       </details>
+
+      <div class="card client-only">
+        <h2 data-i18n="cWhat">Le moiré, c'est quoi ?</h2>
+        <div class="notes-body" data-i18n-html="cWhatBody"></div>
+      </div>
+      <p id="c-footer" class="client-only footer-note"></p>
     </section>
   </main>
 

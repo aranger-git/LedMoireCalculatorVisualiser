@@ -1,4 +1,4 @@
-import { analyseOffAxis, cameraPixelMm, maxApertureAt, sweep, riskRanges, renderPreview, LEVELS } from "./moire.js";
+import { analyseOffAxis, cameraPixelMm, maxApertureAt, sweep, riskRanges, safeRanges, renderPreview, LEVELS } from "./moire.js";
 import { createScene, buildHeatmap } from "./scene3d.js";
 import { loadPlanFile } from "./plan.js";
 
@@ -47,6 +47,37 @@ const T = {
     planWidth: "Largeur réelle du plan (m)", planRot: "Rotation (°)", planX: "Décalage X (m)", planZ: "Décalage Z (m)", planOpacity: "Opacité",
     planClear: "Retirer", loading: "Chargement…", planError: "Impossible de lire ce fichier.",
     no3d: "La 3D n'est pas disponible sur ce navigateur (WebGL).",
+    shareClient: "Lien client", toClient: "Aperçu client", toFull: "← Retour à l'outil", print: "Imprimer / PDF",
+    project: "Projet / client", projectPh: "ex. Gala Fondation X — 12 mars",
+    copiedClient: "Lien client copié ✓",
+    cSetup: "Votre configuration", cReco: "Nos recommandations",
+    sWall: "Écran LED", sCamera: "Caméra", sLens: "Objectif", sShot: "Cadrage", sPos: "Position caméra", sFocus: "Mise au point",
+    wallDesc: (n, c, r, w, h) => `${n} · ${c} × ${r} panneaux (${w} × ${h} m)`,
+    shotDesc: (f, n, fw) => `${f} à f/${n} · cadre d'environ ${fw} de large sur l'écran`,
+    posDesc: (d, h, x) => `à ${d} de l'écran, objectif à ${h} du sol${x ? `, décalée de ${x} sur le côté` : ""}`,
+    focusWall: "sur l'écran (pire cas)", focusSubject: (g) => `sur un sujet à ${g} devant l'écran`,
+    verdictClient: {
+      low: "Bonne nouvelle : avec cette configuration, le moiré est peu probable à la caméra.",
+      moderate: "Le moiré est possible sur certains plans. Nous le vérifierons à l'essai caméra et ajusterons la focale ou la mise au point au besoin.",
+      high: "Avec cette configuration, le moiré est probable à la caméra. Voici nos recommandations pour l'éviter.",
+    },
+    rPosOk: "Votre position caméra est dans une zone sûre.",
+    rDist: (f, list) => `À ${f}, distances sûres pour la caméra : ${list}.`,
+    rDistNone: (f) => `À ${f}, aucune distance n'est vraiment sûre : prévoir une autre focale.`,
+    rFocal: (d, list) => `À ${d} de l'écran, focales sûres : ${list}.`,
+    rFocalNone: (d) => `À ${d} de l'écran, aucune focale n'est vraiment sûre : déplacer la caméra.`,
+    rGap: (g) => `Faire le point sur les personnes, à au moins ${g} devant l'écran : l'écran devient légèrement flou et le moiré disparaît.`,
+    rTipContent: "Éviter les contenus à motifs fins (lignes, grilles, textures) derrière les plans serrés.",
+    rTipTest: "Un essai caméra avec le contenu réel est prévu au montage pour confirmer.",
+    lessThan: (x) => `moins de ${x}`, orMore: (x) => `${x} et plus`, upTo: (x) => `jusqu'à ${x}`, range: (a, b) => `entre ${a} et ${b}`, or: " ou ",
+    cWhat: "Le moiré, c'est quoi ?",
+    cWhatBody: `<p>Le moiré, ce sont des vagues ou des bandes qui apparaissent <strong>à la caméra</strong> quand la grille de pixels de l'écran LED et la grille du capteur de la caméra se superposent.</p>
+<p>Il est <strong>invisible à l'œil nu dans la salle</strong> : seules la captation, la diffusion et la projection sur les écrans de retransmission sont touchées.</p>
+<p>Il dépend de la distance, de la focale et de la mise au point. C'est pourquoi on planifie la position des caméras avec vous.</p>`,
+    preparedBy: "Estimation préparée par Ranger Son Éclairage",
+    disclaimer: "Calcul théorique, à confirmer par un essai caméra sur place.",
+    previewClient: "Ce que la caméra risque d'enregistrer", previewHintClient: "Simulation sur un fond blanc uni, vu par le capteur. Uniforme = aucun moiré.",
+    view3dHintClient: "Glisser pour tourner. Au sol : vert = zone sûre pour la caméra, jaune = moiré possible, rouge = moiré probable. « Vue caméra » montre le cadrage.",
   },
   en: {
     title: "LED Moiré Calculator", subtitle: "LED wall & camera", share: "Copy link", copied: "Link copied ✓",
@@ -91,6 +122,37 @@ const T = {
     planWidth: "Real plan width (m)", planRot: "Rotation (°)", planX: "Offset X (m)", planZ: "Offset Z (m)", planOpacity: "Opacity",
     planClear: "Remove", loading: "Loading…", planError: "Couldn't read this file.",
     no3d: "3D isn't available in this browser (WebGL).",
+    shareClient: "Client link", toClient: "Client preview", toFull: "← Back to tool", print: "Print / PDF",
+    project: "Project / client", projectPh: "e.g. Foundation X Gala — March 12",
+    copiedClient: "Client link copied ✓",
+    cSetup: "Your setup", cReco: "Our recommendations",
+    sWall: "LED wall", sCamera: "Camera", sLens: "Lens", sShot: "Framing", sPos: "Camera position", sFocus: "Focus",
+    wallDesc: (n, c, r, w, h) => `${n} · ${c} × ${r} panels (${w} × ${h} m)`,
+    shotDesc: (f, n, fw) => `${f} at f/${n} · frames about ${fw} of wall width`,
+    posDesc: (d, h, x) => `${d} from the wall, lens ${h} off the floor${x ? `, ${x} off to the side` : ""}`,
+    focusWall: "on the wall (worst case)", focusSubject: (g) => `on a subject ${g} in front of the wall`,
+    verdictClient: {
+      low: "Good news: with this setup, moiré is unlikely on camera.",
+      moderate: "Moiré is possible on some shots. We'll check it at the camera test and adjust focal length or focus if needed.",
+      high: "With this setup, moiré is likely on camera. Here's how we recommend avoiding it.",
+    },
+    rPosOk: "Your camera position is in a safe zone.",
+    rDist: (f, list) => `At ${f}, safe camera distances: ${list}.`,
+    rDistNone: (f) => `At ${f}, no distance is truly safe: plan a different focal length.`,
+    rFocal: (d, list) => `At ${d} from the wall, safe focal lengths: ${list}.`,
+    rFocalNone: (d) => `At ${d} from the wall, no focal length is truly safe: move the camera.`,
+    rGap: (g) => `Focus on the people, at least ${g} in front of the wall: the wall goes slightly soft and the moiré disappears.`,
+    rTipContent: "Avoid fine-patterned content (lines, grids, textures) behind tight shots.",
+    rTipTest: "A camera test with the real content is planned at load-in to confirm.",
+    lessThan: (x) => `under ${x}`, orMore: (x) => `${x} and beyond`, upTo: (x) => `up to ${x}`, range: (a, b) => `between ${a} and ${b}`, or: " or ",
+    cWhat: "What is moiré?",
+    cWhatBody: `<p>Moiré is waves or bands that appear <strong>on camera</strong> when the LED wall's pixel grid and the camera sensor's pixel grid overlap.</p>
+<p>It's <strong>invisible to the naked eye in the room</strong>: only the recording, the broadcast and the IMAG screens are affected.</p>
+<p>It depends on distance, focal length and focus. That's why we plan camera positions with you.</p>`,
+    preparedBy: "Estimate prepared by Ranger Son Éclairage",
+    disclaimer: "Theoretical calculation, to be confirmed by an on-site camera test.",
+    previewClient: "What the camera may record", previewHintClient: "Simulation of a plain white background as the sensor sees it. Even = no moiré.",
+    view3dHintClient: "Drag to orbit. On the floor: green = safe camera zone, yellow = moiré possible, red = moiré likely. \"Camera view\" shows the framing.",
   },
 };
 let lang = "fr";
@@ -119,7 +181,10 @@ let DATA;
 const state = {
   tile: null, camera: null, lens: null, ext: false, focal: 50, distance: 20, aperture: "open", gap: 0, angle: 3, fill: null, sweep: "distance",
   wallW: 6, wallH: 3.5, wallBottom: 1, camX: 0, camH: 2.5, heat: true,
+  mode: "full", project: "",
 };
+let previewing = false; // client mode entered from the tool (shows a way back)
+const isClient = () => state.mode === "client";
 const NUM_KEYS = ["focal", "distance", "gap", "angle", "fill", "wallW", "wallH", "wallBottom", "camX", "camH"];
 // Plan underlay lives only in this browser tab (never in the URL, never uploaded).
 const plan = { source: null, name: "", widthM: 40, rotDeg: 0, offX: 0, offZ: 15, opacity: 0.85 };
@@ -130,6 +195,8 @@ function readHash() {
   for (const k of NUM_KEYS) if (p.has(k)) state[k] = parseFloat(p.get(k));
   if (p.has("ext")) state.ext = p.get("ext") === "1";
   if (p.has("lang")) lang = p.get("lang") === "en" ? "en" : "fr";
+  if (p.has("project")) state.project = p.get("project");
+  state.mode = p.get("mode") === "client" ? "client" : "full";
 }
 function writeHash() {
   const p = new URLSearchParams({
@@ -139,7 +206,14 @@ function writeHash() {
     wallW: fmtRaw(state.wallW), wallH: fmtRaw(state.wallH), wallBottom: fmtRaw(state.wallBottom),
     camX: fmtRaw(state.camX), camH: fmtRaw(state.camH),
   });
+  if (state.project) p.set("project", state.project);
+  if (isClient()) p.set("mode", "client");
   history.replaceState(null, "", `#${p}`);
+}
+function clientUrl() {
+  const p = new URLSearchParams(location.hash.slice(1));
+  p.set("mode", "client");
+  return `${location.origin}${location.pathname}#${p}`;
 }
 const fmtRaw = (x) => String(Math.round(x * 10) / 10);
 
@@ -216,10 +290,18 @@ function buildSelects() {
 
 function applyI18n() {
   document.documentElement.lang = lang;
-  document.querySelectorAll("[data-i18n]").forEach((el) => (el.textContent = t(el.dataset.i18n)));
+  document.body.classList.toggle("client", isClient());
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    const key = isClient() && el.dataset.i18nClient ? el.dataset.i18nClient : el.dataset.i18n;
+    el.textContent = t(key);
+  });
+  document.querySelectorAll("[data-i18n-ph]").forEach((el) => (el.placeholder = t(el.dataset.i18nPh)));
+  $("to-full").hidden = !(isClient() && previewing);
+  $("project").value = state.project;
+  $("c-project").textContent = state.project;
   document.querySelectorAll("[data-i18n-html]").forEach((el) => (el.innerHTML = t(el.dataset.i18nHtml)));
   $("lang").textContent = lang === "fr" ? "EN" : "FR";
-  document.title = `${t("title")} — Ranger Son Éclairage`;
+  document.title = state.project ? `${state.project} — ${t("title")}` : `${t("title")} — Ranger Son Éclairage`;
   buildSelects();
   syncPlan();
 }
@@ -276,8 +358,8 @@ function render() {
   v.dataset.level = a.level;
   $("verdict-icon").textContent = { low: "✓", moderate: "!", high: "✕" }[a.level];
   $("verdict-label").textContent = t(a.level);
-  let text = t("verdict")[a.level];
-  if (a.level !== "low" && state.gap === 0) {
+  let text = t(isClient() ? "verdictClient" : "verdict")[a.level];
+  if (!isClient() && a.level !== "low" && state.gap === 0) {
     const g = gapToFix();
     text += " " + (g ? t("fixGap")(fmtM(g)) : t("noFixGap"));
   }
@@ -289,8 +371,89 @@ function render() {
 
   drawPreview(a);
   drawChart();
+  if (isClient()) renderClient(a);
   schedule3d();
   writeHash();
+}
+
+// ---------- client mode ----------
+function frameWidthM() {
+  return (2 * geomFor().d * camera().sensor_w_mm) / (2 * state.focal);
+}
+
+// "under 6 m or 80 m and beyond" style list of safe intervals.
+function describeRanges(ranges, min, max, unit, lowWord) {
+  return ranges
+    .map((r) => {
+      const atMin = r.from <= min * 1.02;
+      const atMax = r.to >= max * 0.98;
+      if (atMin && atMax) return null;
+      if (atMin) return t(lowWord)(unit(r.to));
+      if (atMax) return t("orMore")(unit(r.from));
+      return t("range")(unit(r.from), unit(r.to));
+    })
+    .filter(Boolean)
+    .reduce((acc, item, i, arr) => acc + (i === 0 ? "" : i === arr.length - 1 ? t("or") : ", ") + item, "");
+}
+
+function renderClient(a) {
+  const wg = wallGeom();
+  const l = lens();
+  const rows = [
+    ["sWall", t("wallDesc")(tile().name, wg.cols, wg.rows, fmt(wg.w, 1), fmt(wg.h, 1))],
+    ["sCamera", camera().name],
+    ["sLens", state.lens === "manual" ? t("manualLens") : l.name + (extOn() ? " + 2×" : "")],
+    ["sShot", t("shotDesc")(fmtMm(state.focal), fmt(apertureN(), 1), fmtM(frameWidthM()))],
+    ["sPos", t("posDesc")(fmtM(state.distance), fmtM(state.camH), state.camX ? fmtM(Math.abs(state.camX)) : "")],
+    ["sFocus", state.gap === 0 ? t("focusWall") : t("focusSubject")(fmtM(state.gap))],
+  ];
+  const dl = $("c-setup");
+  dl.innerHTML = "";
+  for (const [k, v] of rows) {
+    const dt = document.createElement("dt");
+    dt.textContent = t(k);
+    const dd = document.createElement("dd");
+    dd.textContent = v;
+    dl.append(dt, dd);
+  }
+
+  const reco = [];
+  if (a.level === "low") reco.push(t("rPosOk"));
+
+  const dPts = sweep(DIST_MIN, DIST_MAX, 240, (x) => evaluate({ distance: x }));
+  const dSafe = safeRanges(dPts);
+  const dList = describeRanges(dSafe, DIST_MIN, DIST_MAX, fmtM, "lessThan");
+  reco.push(dSafe.length === 0 ? t("rDistNone")(fmtMm(state.focal)) : dList ? t("rDist")(fmtMm(state.focal), dList) : null);
+
+  const [fmin, fmax] = focalRange();
+  const fPts = sweep(fmin, fmax, 240, (x) => evaluate({ focal: x }));
+  const fSafe = safeRanges(fPts);
+  const fList = describeRanges(fSafe, fmin, fmax, fmtMm, "upTo");
+  reco.push(fSafe.length === 0 ? t("rFocalNone")(fmtM(state.distance)) : fList ? t("rFocal")(fmtM(state.distance), fList) : null);
+
+  if (a.level !== "low" && state.gap === 0) {
+    const g = gapToFix();
+    if (g) reco.push(t("rGap")(fmtM(g)));
+  }
+  reco.push(t("rTipContent"), t("rTipTest"));
+
+  const ul = $("c-reco");
+  ul.innerHTML = "";
+  for (const r of reco.filter(Boolean)) {
+    const li = document.createElement("li");
+    li.textContent = r;
+    ul.append(li);
+  }
+
+  const date = new Date().toLocaleDateString(lang === "fr" ? "fr-CA" : "en-CA", { year: "numeric", month: "long", day: "numeric" });
+  $("c-footer").textContent = `${t("preparedBy")} · ${date}. ${t("disclaimer")}`;
+}
+
+function setMode(mode) {
+  state.mode = mode;
+  applyI18n();
+  render();
+  window.scrollTo(0, 0);
 }
 
 // Smallest subject gap (0.5 m steps) that brings this shot to "low".
@@ -478,6 +641,7 @@ function syncPlan() {
 function wire3d() {
   scene3d = createScene($("scene"), {
     onFloorClick: (x, z) => {
+      if (isClient()) return;
       state.camX = Math.round(x * 10) / 10;
       state.distance = Math.min(Math.max(z, DIST_MIN), DIST_MAX);
       render();
@@ -549,6 +713,23 @@ function wire() {
   document.querySelectorAll("[data-sweep]").forEach((b) =>
     b.addEventListener("click", () => { state.sweep = b.dataset.sweep; render(); }));
   $("lang").addEventListener("click", () => { lang = lang === "fr" ? "en" : "fr"; applyI18n(); render(); });
+  $("project").addEventListener("input", (e) => {
+    state.project = e.target.value.trim();
+    writeHash();
+  });
+  $("to-client").addEventListener("click", () => { previewing = true; setMode("client"); });
+  $("to-full").addEventListener("click", () => { previewing = false; setMode("full"); });
+  $("print").addEventListener("click", () => window.print());
+  $("share-client").addEventListener("click", async () => {
+    const url = clientUrl();
+    try {
+      await navigator.clipboard.writeText(url);
+      $("share-client").textContent = t("copiedClient");
+      setTimeout(() => ($("share-client").textContent = t("shareClient")), 1500);
+    } catch {
+      prompt(t("shareClient"), url);
+    }
+  });
   $("share").addEventListener("click", async () => {
     try {
       await navigator.clipboard.writeText(location.href);

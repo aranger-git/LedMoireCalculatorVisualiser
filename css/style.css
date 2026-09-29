@@ -154,3 +154,41 @@ input[type="number"] {
 }
 label.file input { display: block; margin-top: 6px; max-width: 100%; font-size: 0.85rem; }
 @media (max-width: 600px) { .hud { font-size: 0.7rem; left: 4px; bottom: 4px; } }
+
+/* Client mode */
+body:not(.client) .client-only { display: none !important; }
+body.client .full-only { display: none !important; }
+body.client .layout { grid-template-columns: minmax(0, 1fr); max-width: 960px; }
+body.client .top { max-width: 960px; }
+.primary { background: var(--accent); color: #fff; border: 1px solid var(--accent); border-radius: 8px; padding: 6px 12px; }
+.primary:hover { filter: brightness(1.08); }
+.project { font-size: 1.05rem; font-weight: 600; margin: 6px 0 0; }
+input[type="text"] {
+  width: 100%; margin-top: 4px; font: inherit; padding: 7px 8px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--bg); color: var(--text);
+}
+.setup-list { display: grid; grid-template-columns: max-content 1fr; gap: 8px 16px; margin: 12px 0 0; }
+.setup-list dt { color: var(--muted); }
+.setup-list dd { margin: 0; font-weight: 500; }
+@media (max-width: 600px) {
+  .setup-list { grid-template-columns: 1fr; gap: 2px; }
+  .setup-list dd { margin-bottom: 8px; }
+}
+.reco { margin: 12px 0 0; padding-left: 20px; }
+.reco li { margin-bottom: 8px; }
+.notes-body { color: var(--muted); font-size: 0.95rem; }
+.notes-body p { margin: 8px 0 0; }
+.footer-note { color: var(--muted); font-size: 0.8rem; text-align: center; margin: 0; }
+
+@media print {
+  :root { --bg: #fff; --card: #fff; --text: #000; --muted: #444; --line: #ccc; color-scheme: light; }
+  body { background: #fff; }
+  .top-actions, .seg, .hint[data-i18n="view3dHint"] { display: none !important; }
+  .layout, .top { max-width: none; padding-left: 0; padding-right: 0; }
+  .card { break-inside: avoid; box-shadow: none; }
+  .verdict { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .scene, canvas#preview { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  canvas#preview { max-width: 55%; }
+  .results { gap: 10px; }
+  .card { padding: 12px; }
+}

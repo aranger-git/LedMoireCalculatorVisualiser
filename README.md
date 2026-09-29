@@ -18,15 +18,19 @@ It's for sales (setting client expectations), for techs (placing cameras) and fo
 - **3D view:**
   - Shows the LED wall (snapped to whole panels), the camera and its frustum, and the moiré risk coloured on the floor, so you can see where to put the camera.
   - Click the floor to move the camera. "Vue caméra" shows the actual framing.
+- **Client mode:**
+  - "Aperçu client" shows a clean one-page view for the client: plain-language verdict, their setup, safe camera distances and focal lengths, a focus tip, the 3D view, and "what is moiré" (invisible in the room, visible on camera).
+  - "Lien client" copies a link that opens straight in client mode. Add a project name first and it shows as the page title.
+  - "Imprimer / PDF" saves it for a proposal.
 - **Floor plan import:** load a PDF, PNG or JPG plan as a scaled underlay in the 3D view. It stays on the device and is never uploaded.
 
 ⚠️ The risk thresholds (6 % / 25 %) and lens sharpness are **provisional**. Calibrate against a real wall with the PMW-400L before promising a client anything.
 
 ## Next
 
-1. Simplified client mode.
-2. Refresh rate vs. shutter (scan lines).
-3. Several cameras on the same plan.
+1. Refresh rate vs. shutter (scan lines).
+2. Several cameras on the same plan.
+3. RSE logo and colours on the client page.
 
 ## How it's built
 
