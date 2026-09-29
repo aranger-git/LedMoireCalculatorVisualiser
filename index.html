@@ -4,7 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Calculateur de moiré LED — Ranger Son Éclairage</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Crect width=%2216%22 height=%2216%22 rx=%223%22 fill=%22%232a78d6%22/%3E%3Cpath d=%22M3 4h10M3 8h10M3 12h10%22 stroke=%22white%22/%3E%3C/svg%3E">
   <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">{ "imports": { "three": "./vendor/three/three.module.min.js" } }</script>
 </head>
 <body>
   <header class="top">
@@ -80,6 +82,53 @@
         <div class="card stat"><p class="eyebrow" data-i18n="ledPx">1 pixel LED sur le capteur</p><p class="stat-value" id="s-ledpx"></p><p class="hint" data-i18n="ledPxHint">Pire zone : ~1 à 3 pixels caméra</p></div>
         <div class="card stat"><p class="eyebrow" data-i18n="blur">Flou de l'écran</p><p class="stat-value" id="s-blur"></p><p class="hint" data-i18n="blurHint">&gt; 3 px de flou efface le moiré</p></div>
         <div class="card stat"><p class="eyebrow" data-i18n="contrast">Contraste du moiré</p><p class="stat-value" id="s-contrast"></p><p class="hint" data-i18n="contrastHint">Seuils provisoires : 6 % / 25 %</p></div>
+      </div>
+
+
+      <div class="card">
+        <div class="card-head">
+          <h2 data-i18n="view3d">Vue 3D</h2>
+          <div class="seg">
+            <button type="button" data-view="free" class="on" data-i18n="free">Vue libre</button>
+            <button type="button" data-view="camera" data-i18n="camView">Vue caméra</button>
+          </div>
+        </div>
+        <div class="scene-wrap">
+          <div id="scene" class="scene"></div>
+          <p id="hud" class="hud"></p>
+        </div>
+        <p class="hint" data-i18n="view3dHint"></p>
+        <div class="grid3">
+          <fieldset>
+            <legend data-i18n="wallSize">Écran</legend>
+            <label><span data-i18n="wallW"></span><input type="number" id="wallW" min="0.5" max="100" step="0.5"></label>
+            <label><span data-i18n="wallH"></span><input type="number" id="wallH" min="0.5" max="30" step="0.5"></label>
+            <label><span data-i18n="wallBottom"></span><input type="number" id="wallBottom" min="0" max="20" step="0.1"></label>
+            <p class="hint" id="wall-panels"></p>
+          </fieldset>
+          <fieldset>
+            <legend data-i18n="camPos">Caméra</legend>
+            <label><span data-i18n="camX"></span><input type="number" id="camX" min="-100" max="100" step="0.5"></label>
+            <label><span data-i18n="camH"></span><input type="number" id="camH" min="0.3" max="20" step="0.1"></label>
+            <label class="check"><input type="checkbox" id="heat" checked> <span data-i18n="heatLabel"></span></label>
+          </fieldset>
+          <fieldset>
+            <legend data-i18n="planTitle">Plan de salle</legend>
+            <label class="file"><span data-i18n="planImport"></span>
+              <input type="file" id="plan-file" accept="application/pdf,image/png,image/jpeg,image/webp,.pdf">
+            </label>
+            <p class="hint"><span id="plan-name"></span></p>
+            <p class="hint" data-i18n="planHint"></p>
+            <div id="plan-controls" hidden>
+              <label><span data-i18n="planWidth"></span><input type="number" id="plan-widthM" min="1" max="500" step="0.5"></label>
+              <label><span data-i18n="planRot"></span><input type="range" id="plan-rotDeg" min="-180" max="180" step="1"></label>
+              <label><span data-i18n="planX"></span><input type="number" id="plan-offX" step="0.5"></label>
+              <label><span data-i18n="planZ"></span><input type="number" id="plan-offZ" step="0.5"></label>
+              <label><span data-i18n="planOpacity"></span><input type="range" id="plan-opacity" min="0.1" max="1" step="0.05"></label>
+              <button type="button" id="plan-clear" class="ghost" data-i18n="planClear">Retirer</button>
+            </div>
+          </fieldset>
+        </div>
       </div>
 
       <div class="card">

@@ -126,14 +126,23 @@ export function levelOf(risk) {
   return "low";
 }
 
-// Log-spaced sweep of one parameter. build(x) returns analyse() inputs.
-export function sweep(min, max, steps, build) {
+// Off-axis view: the wall's pitch is foreshortened by cos(angle) along each axis.
+// Returns the worse of the horizontal and vertical grids.
+export function analyseOffAxis(p, cosH = 1, cosV = 1) {
+  const h = analyse({ ...p, pitch: p.pitch * cosH });
+  if (cosV === cosH) return h;
+  const v = analyse({ ...p, pitch: p.pitch * cosV });
+  return v.risk > h.risk ? v : h;
+}
+
+// Log-spaced sweep of one parameter. evaluate(x) returns an analysis result.
+export function sweep(min, max, steps, evaluate) {
   const out = [];
   const lmin = Math.log(min);
   const lmax = Math.log(max);
   for (let i = 0; i < steps; i++) {
     const x = Math.exp(lmin + ((lmax - lmin) * i) / (steps - 1));
-    out.push({ x, ...analyse(build(x)) });
+    out.push({ x, ...evaluate(x) });
   }
   return out;
 }

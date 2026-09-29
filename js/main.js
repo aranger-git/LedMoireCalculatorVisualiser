@@ -1,4 +1,6 @@
-import { analyse, cameraPixelMm, maxApertureAt, sweep, riskRanges, renderPreview, LEVELS } from "./moire.js";
+import { analyseOffAxis, cameraPixelMm, maxApertureAt, sweep, riskRanges, renderPreview, LEVELS } from "./moire.js";
+import { createScene, buildHeatmap } from "./scene3d.js";
+import { loadPlanFile } from "./plan.js";
 
 // ---------- i18n ----------
 const T = {
@@ -19,6 +21,7 @@ const T = {
     how: "Comment c'est calculé",
     howBody: `<p>On projette la grille LED sur le capteur (taille d'un pixel LED = pas × focale ÷ distance) et on la compare à la grille des pixels caméra.</p>
 <p>La grille passe à travers l'objectif, le flou de mise au point, la diffraction, le filtre anti-aliasing et les photosites. Tout ce qui dépasse la limite de Nyquist du capteur se replie en motifs parasites : c'est le moiré. Le « contraste du moiré » est la force de ces motifs repliés.</p>
+<p>La position de la caméra compte : vu en biais, le pas de l'écran se raccourcit (× cos de l'angle), ce qui déplace la zone de risque. La vue 3D colore chaque point du sol selon le risque si la caméra y était placée.</p>
 <p>Les seuils (6 % / 25 %) et le modèle d'objectif sont des estimations. À valider sur un vrai mur avec vos caméras avant d'en faire une promesse client.</p>`,
     open: "ouvert", openAt: (n) => `Ouverture max à cette focale : f/${n}`,
     manualLens: "Objectif manuel (toutes focales)", tbc: "à confirmer",
@@ -34,6 +37,16 @@ const T = {
     rangesLead: "Zones à risque : ",
     between: (a, b) => `${a} à ${b}`,
     px: "px caméra",
+    view3d: "Vue 3D", free: "Vue libre", camView: "Vue caméra", heatLabel: "Zones de risque au sol",
+    view3dHint: "Glisser pour tourner, molette pour zoomer. Cliquer au sol pour placer la caméra. Le sol est coloré selon le risque pour la focale et le diaphragme choisis.",
+    wallSize: "Écran", wallW: "Largeur (m)", wallH: "Hauteur (m)", wallBottom: "Bas de l'écran (m)",
+    camPos: "Caméra", camX: "Décalage latéral (m)", camH: "Hauteur objectif (m)",
+    panels: (c, r, w, h) => `${c} × ${r} panneaux = ${w} × ${h} m`, frameW: "cadre",
+    planTitle: "Plan de salle", planImport: "Importer un plan (PDF, PNG, JPG)", noPlan: "Aucun plan",
+    planHint: "Le fichier reste sur cet appareil, rien n'est envoyé. Le haut du plan = côté écran.",
+    planWidth: "Largeur réelle du plan (m)", planRot: "Rotation (°)", planX: "Décalage X (m)", planZ: "Décalage Z (m)", planOpacity: "Opacité",
+    planClear: "Retirer", loading: "Chargement…", planError: "Impossible de lire ce fichier.",
+    no3d: "La 3D n'est pas disponible sur ce navigateur (WebGL).",
   },
   en: {
     title: "LED Moiré Calculator", subtitle: "LED wall & camera", share: "Copy link", copied: "Link copied ✓",
@@ -52,6 +65,7 @@ const T = {
     how: "How it's calculated",
     howBody: `<p>The LED grid is projected onto the sensor (one LED pixel = pitch × focal length ÷ distance) and compared with the camera's pixel grid.</p>
 <p>The grid passes through the lens, focus blur, diffraction, the anti-aliasing filter and the photosites. Anything above the sensor's Nyquist limit folds back as false patterns: that's moiré. "Moiré contrast" is how strong those folded patterns are.</p>
+<p>Camera position matters: seen at an angle, the wall's pitch shortens (× cos of the angle), which shifts the risk zone. The 3D view colours each point on the floor by the risk if the camera stood there.</p>
 <p>The thresholds (6 % / 25 %) and the lens model are estimates. Validate on a real wall with your cameras before promising a client anything.</p>`,
     open: "wide open", openAt: (n) => `Max aperture at this focal length: f/${n}`,
     manualLens: "Manual lens (any focal length)", tbc: "to confirm",
@@ -67,6 +81,16 @@ const T = {
     rangesLead: "Risk zones: ",
     between: (a, b) => `${a} to ${b}`,
     px: "camera px",
+    view3d: "3D view", free: "Free view", camView: "Camera view", heatLabel: "Risk zones on the floor",
+    view3dHint: "Drag to orbit, scroll to zoom. Click the floor to place the camera. The floor is coloured by risk for the chosen focal length and aperture.",
+    wallSize: "Wall", wallW: "Width (m)", wallH: "Height (m)", wallBottom: "Wall bottom (m)",
+    camPos: "Camera", camX: "Side offset (m)", camH: "Lens height (m)",
+    panels: (c, r, w, h) => `${c} × ${r} panels = ${w} × ${h} m`, frameW: "frame",
+    planTitle: "Floor plan", planImport: "Import a plan (PDF, PNG, JPG)", noPlan: "No plan",
+    planHint: "The file stays on this device, nothing is uploaded. Top of the plan = wall side.",
+    planWidth: "Real plan width (m)", planRot: "Rotation (°)", planX: "Offset X (m)", planZ: "Offset Z (m)", planOpacity: "Opacity",
+    planClear: "Remove", loading: "Loading…", planError: "Couldn't read this file.",
+    no3d: "3D isn't available in this browser (WebGL).",
   },
 };
 let lang = "fr";
@@ -92,12 +116,18 @@ async function loadJSON(path) {
 
 // ---------- state ----------
 let DATA;
-const state = { tile: null, camera: null, lens: null, ext: false, focal: 50, distance: 20, aperture: "open", gap: 0, angle: 3, fill: null, sweep: "distance" };
+const state = {
+  tile: null, camera: null, lens: null, ext: false, focal: 50, distance: 20, aperture: "open", gap: 0, angle: 3, fill: null, sweep: "distance",
+  wallW: 6, wallH: 3.5, wallBottom: 1, camX: 0, camH: 2.5, heat: true,
+};
+const NUM_KEYS = ["focal", "distance", "gap", "angle", "fill", "wallW", "wallH", "wallBottom", "camX", "camH"];
+// Plan underlay lives only in this browser tab (never in the URL, never uploaded).
+const plan = { source: null, name: "", widthM: 40, rotDeg: 0, offX: 0, offZ: 15, opacity: 0.85 };
 
 function readHash() {
   const p = new URLSearchParams(location.hash.slice(1));
   for (const k of ["tile", "camera", "lens", "aperture", "sweep"]) if (p.has(k)) state[k] = p.get(k);
-  for (const k of ["focal", "distance", "gap", "angle", "fill"]) if (p.has(k)) state[k] = parseFloat(p.get(k));
+  for (const k of NUM_KEYS) if (p.has(k)) state[k] = parseFloat(p.get(k));
   if (p.has("ext")) state.ext = p.get("ext") === "1";
   if (p.has("lang")) lang = p.get("lang") === "en" ? "en" : "fr";
 }
@@ -106,6 +136,8 @@ function writeHash() {
     tile: state.tile, camera: state.camera, lens: state.lens, ext: state.ext ? "1" : "0",
     focal: fmtRaw(state.focal), distance: fmtRaw(state.distance), aperture: state.aperture,
     gap: state.gap, angle: state.angle, fill: state.fill, sweep: state.sweep, lang,
+    wallW: fmtRaw(state.wallW), wallH: fmtRaw(state.wallH), wallBottom: fmtRaw(state.wallBottom),
+    camX: fmtRaw(state.camX), camH: fmtRaw(state.camH),
   });
   history.replaceState(null, "", `#${p}`);
 }
@@ -124,11 +156,33 @@ const openAperture = () => fmtStop(maxApertureAt(lens(), state.focal, extOn()));
 const fmtStop = (n) => Math.round(n * 10) / 10;
 const apertureN = () => (state.aperture === "open" ? openAperture() : Math.max(parseFloat(state.aperture), openAperture()));
 
-function inputsFor({ focal = state.focal, distance = state.distance } = {}) {
+// Wall snapped to whole panels.
+function wallGeom() {
+  const tl = tile();
+  const cols = Math.max(1, Math.round((state.wallW * 1000) / tl.panel_w_mm));
+  const rows = Math.max(1, Math.round((state.wallH * 1000) / tl.panel_h_mm));
+  return { cols, rows, w: (cols * tl.panel_w_mm) / 1000, h: (rows * tl.panel_h_mm) / 1000, bottom: state.wallBottom };
+}
+
+// Camera at (camX, camH, distance) aimed at the wall centre. Returns the true distance to the aim
+// point and the foreshortening of the wall grid along each axis.
+function geomFor(distance = state.distance, camX = state.camX) {
+  const wg = wallGeom();
+  const dy = state.camH - (wg.bottom + wg.h / 2);
+  const d = Math.hypot(distance, camX, dy);
+  return { d, cosH: distance / Math.hypot(distance, camX), cosV: distance / Math.hypot(distance, dy) };
+}
+
+function evaluate(opts = {}) {
+  const g = geomFor(opts.distance ?? state.distance, opts.camX ?? state.camX);
+  return analyseOffAxis(inputsFor({ ...opts, d: g.d }), g.cosH, g.cosV);
+}
+
+function inputsFor({ focal = state.focal, d } = {}) {
   const tl = tile();
   const cam = camera();
   const l = lens();
-  const d = distance * 1000;
+  d = (d ?? geomFor().d) * 1000;
   const N = state.aperture === "open"
     ? maxApertureAt(l, focal, extOn())
     : Math.max(parseFloat(state.aperture), maxApertureAt(l, focal, extOn()));
@@ -167,6 +221,7 @@ function applyI18n() {
   $("lang").textContent = lang === "fr" ? "EN" : "FR";
   document.title = `${t("title")} — Ranger Son Éclairage`;
   buildSelects();
+  syncPlan();
 }
 
 function syncLensControls() {
@@ -216,7 +271,7 @@ function render() {
   $("fill").value = state.fill;
   $("fill-out").textContent = pct(state.fill);
 
-  const a = analyse(inputsFor());
+  const a = evaluate();
   const v = $("verdict");
   v.dataset.level = a.level;
   $("verdict-icon").textContent = { low: "✓", moderate: "!", high: "✕" }[a.level];
@@ -234,6 +289,7 @@ function render() {
 
   drawPreview(a);
   drawChart();
+  schedule3d();
   writeHash();
 }
 
@@ -243,7 +299,7 @@ function gapToFix() {
   let found = null;
   for (let g = 0.5; g <= 15; g += 0.5) {
     state.gap = g;
-    if (analyse(inputsFor()).level === "low") { found = g; break; }
+    if (evaluate().level === "low") { found = g; break; }
   }
   state.gap = saved;
   return found;
@@ -279,11 +335,11 @@ function drawChart() {
   const byDist = state.sweep === "distance";
   const [fmin, fmax] = focalRange();
   const [xmin, xmax] = byDist ? [DIST_MIN, DIST_MAX] : [fmin, fmax];
-  const pts = sweep(xmin, xmax, 240, (x) => inputsFor(byDist ? { distance: x } : { focal: x }));
+  const pts = sweep(xmin, xmax, 240, (x) => evaluate(byDist ? { distance: x } : { focal: x }));
   const cur = byDist ? state.distance : state.focal;
   const unit = byDist ? fmtM : fmtMm;
 
-  document.querySelectorAll(".seg button").forEach((b) => b.classList.toggle("on", b.dataset.sweep === state.sweep));
+  document.querySelectorAll("[data-sweep]").forEach((b) => b.classList.toggle("on", b.dataset.sweep === state.sweep));
   $("chart-title").textContent = byDist ? t("chartDistance")(fmtMm(state.focal)) : t("chartFocal")(fmtM(state.distance));
 
   const ymax = Math.max(0.5, ...pts.map((p) => p.risk)) * 1.05;
@@ -326,7 +382,7 @@ function drawChart() {
   el("path", { class: "series", d: pts.map((p, i) => `${i ? "L" : "M"}${x(p.x).toFixed(1)},${y(p.risk).toFixed(1)}`).join("") }, svg);
 
   // Current setting
-  const a = analyse(inputsFor());
+  const a = evaluate();
   el("line", { class: "cursor", x1: x(cur), x2: x(cur), y1: M.t, y2: H - M.b }, svg);
   el("circle", { class: "marker", cx: x(cur), cy: y(a.risk), r: 5 }, svg);
 
@@ -375,6 +431,96 @@ function drawChart() {
     : t("rangesNone");
 }
 
+// ---------- 3D ----------
+let scene3d = null;
+let pending3d = false;
+let framed = false;
+function schedule3d() {
+  if (!scene3d || pending3d) return;
+  pending3d = true;
+  requestAnimationFrame(() => { pending3d = false; update3d(); });
+}
+
+function update3d() {
+  const wg = wallGeom();
+  const cam = camera();
+  const hfovDeg = (2 * Math.atan(cam.sensor_w_mm / (2 * state.focal)) * 180) / Math.PI;
+  const aspect = cam.sensor_w_mm / cam.sensor_h_mm;
+
+  // Heatmap extent follows the camera distance so the interesting zone stays readable.
+  const zmax = Math.min(Math.max(state.distance * 1.6, 30), DIST_MAX);
+  const half = Math.max(zmax * 0.45, wg.w);
+  const heat = state.heat
+    ? buildHeatmap({ xmin: -half, xmax: half, zmin: 0.5, zmax, nx: 72, nz: 72 }, (x, z) => evaluate({ distance: z, camX: x }).level)
+    : { rgba: new Uint8Array(4), nx: 1, nz: 1, xmin: 0, xmax: 0.001, zmin: 0, zmax: 0.001 };
+
+  scene3d.update({
+    wall: { ...wg, label: tile().name },
+    cam: { x: state.camX, y: state.camH, z: state.distance, hfovDeg, aspect },
+    heat,
+  });
+  if (!framed) { scene3d.frame({ wall: wg, cam: { z: state.distance } }); framed = true; }
+
+  $("wall-panels").textContent = t("panels")(wg.cols, wg.rows, fmt(wg.w, 2), fmt(wg.h, 2));
+  $("hud").textContent = `${fmtM(geomFor().d)} · ${fmtMm(state.focal)} · HFOV ${fmt(hfovDeg, 1)}° · ${t("frameW")} ${fmtM(2 * geomFor().d * Math.tan((hfovDeg * Math.PI) / 360))}`;
+  for (const k of ["wallW", "wallH", "wallBottom", "camX", "camH"]) {
+    if (document.activeElement !== $(k)) $(k).value = fmtRaw(state[k]);
+  }
+}
+
+function syncPlan() {
+  $("plan-controls").hidden = !plan.source;
+  $("plan-name").textContent = plan.source ? plan.name : t("noPlan");
+  for (const k of ["widthM", "rotDeg", "offX", "offZ", "opacity"]) $(`plan-${k}`).value = plan[k];
+  scene3d?.setPlan(plan);
+}
+
+function wire3d() {
+  scene3d = createScene($("scene"), {
+    onFloorClick: (x, z) => {
+      state.camX = Math.round(x * 10) / 10;
+      state.distance = Math.min(Math.max(z, DIST_MIN), DIST_MAX);
+      render();
+    },
+  });
+  for (const k of ["wallW", "wallH", "wallBottom", "camX", "camH"]) {
+    $(k).addEventListener("change", (e) => {
+      const v = parseFloat(e.target.value);
+      if (!Number.isNaN(v)) state[k] = v;
+      render();
+    });
+  }
+  $("heat").addEventListener("change", (e) => { state.heat = e.target.checked; render(); });
+  document.querySelectorAll("[data-view]").forEach((b) =>
+    b.addEventListener("click", () => {
+      document.querySelectorAll("[data-view]").forEach((x) => x.classList.toggle("on", x === b));
+      scene3d.setView(b.dataset.view);
+    }));
+  $("plan-file").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    $("plan-name").textContent = t("loading");
+    try {
+      plan.source = await loadPlanFile(file);
+      plan.name = file.name;
+    } catch (err) {
+      console.error(err);
+      plan.source = null;
+      alert(t("planError"));
+    }
+    syncPlan();
+  });
+  for (const k of ["widthM", "rotDeg", "offX", "offZ", "opacity"]) {
+    $(`plan-${k}`).addEventListener("input", (e) => {
+      const v = parseFloat(e.target.value);
+      if (!Number.isNaN(v)) plan[k] = v;
+      scene3d.setPlan(plan);
+    });
+  }
+  $("plan-clear").addEventListener("click", () => { plan.source = null; $("plan-file").value = ""; syncPlan(); });
+  syncPlan();
+}
+
 // ---------- events ----------
 function wire() {
   $("tile").addEventListener("change", (e) => {
@@ -400,7 +546,7 @@ function wire() {
   $("gap").addEventListener("input", (e) => { state.gap = +e.target.value; render(); });
   $("angle").addEventListener("input", (e) => { state.angle = +e.target.value; render(); });
   $("fill").addEventListener("input", (e) => { state.fill = +e.target.value; render(); });
-  document.querySelectorAll(".seg button").forEach((b) =>
+  document.querySelectorAll("[data-sweep]").forEach((b) =>
     b.addEventListener("click", () => { state.sweep = b.dataset.sweep; render(); }));
   $("lang").addEventListener("click", () => { lang = lang === "fr" ? "en" : "fr"; applyI18n(); render(); });
   $("share").addEventListener("click", async () => {
@@ -442,5 +588,11 @@ function wire() {
 
   applyI18n();
   wire();
+  try {
+    wire3d();
+  } catch (err) {
+    console.error(err);
+    $("scene").textContent = t("no3d");
+  }
   render();
 })();

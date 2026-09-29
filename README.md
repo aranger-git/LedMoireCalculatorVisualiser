@@ -15,14 +15,18 @@ It's for sales (setting client expectations), for techs (placing cameras) and fo
 - A risk curve shows risk by distance or by focal length. Click the curve to jump to that setting.
 - Copy link saves the whole setup in the URL, so it can go into an email or a proposal.
 - FR / EN toggle.
+- **3D view:**
+  - Shows the LED wall (snapped to whole panels), the camera and its frustum, and the moiré risk coloured on the floor, so you can see where to put the camera.
+  - Click the floor to move the camera. "Vue caméra" shows the actual framing.
+- **Floor plan import:** load a PDF, PNG or JPG plan as a scaled underlay in the 3D view. It stays on the device and is never uploaded.
 
 ⚠️ The risk thresholds (6 % / 25 %) and lens sharpness are **provisional**. Calibrate against a real wall with the PMW-400L before promising a client anything.
 
 ## Next
 
-1. 3D view: wall and camera position, with the risk zones on the floor plan.
-2. Simplified client mode.
-3. Refresh rate vs. shutter (scan lines).
+1. Simplified client mode.
+2. Refresh rate vs. shutter (scan lines).
+3. Several cameras on the same plan.
 
 ## How it's built
 
@@ -40,6 +44,10 @@ js/main.js          ← the interface
 data/led-tiles.json ← LED tiles (pitch, panel size) — edit to match RSE inventory
 data/cameras.json   ← camera bodies (sensor size, resolution)
 data/lenses.json    ← lenses (zoom range, aperture, extender)
+js/scene3d.js       ← the 3D view (three.js)
+js/plan.js          ← floor plan import (image / PDF → underlay)
+vendor/             ← three.js and pdf.js, bundled so the app works offline on site
+references/         ← spec sheets and photos for Claude to build from (see references/README.md)
 docs/               ← guides (start with docs/GITHUB-GUIDE.md)
 ```
 
