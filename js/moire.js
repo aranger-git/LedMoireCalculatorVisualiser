@@ -168,6 +168,25 @@ export function riskRanges(points) {
   return ranges;
 }
 
+// Contiguous x ranges where the level is "low" (safe). Slivers narrower than minRatio (x_to / x_from)
+// are dropped: nobody can place a camera in a 5 % window.
+export function safeRanges(points, minRatio = 1.12) {
+  const out = [];
+  let start = null;
+  let prev = null;
+  for (const pt of points) {
+    if (pt.level === "low") {
+      if (start === null) start = pt.x;
+    } else if (start !== null) {
+      out.push({ from: start, to: prev.x });
+      start = null;
+    }
+    prev = pt;
+  }
+  if (start !== null) out.push({ from: start, to: points.at(-1).x });
+  return out.filter((r) => r.to / r.from >= minRatio);
+}
+
 // Camera-pixel image of the wall, sampled after the optics — this is where aliasing appears.
 // Writes grey levels 0..255 into out (length w*h). angleRad rotates the wall grid; perspective
 // makes the LED grid grow by that fraction from left to right edge, like a wall seen off-axis.
